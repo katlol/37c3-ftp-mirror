@@ -10,6 +10,9 @@ if [[ -z "$RCLONE_REMOTE" ]]; then
     exit 1
 fi
 
+# If PARALLEL_JOBS is not set, default to 8
+PARALLEL_JOBS=${PARALLEL_JOBS:-8}
+
 GREP="grep"
 # If we are on a Mac, use the GNU grep
 if [[ $(uname) == "Darwin" ]]; then
