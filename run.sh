@@ -22,8 +22,18 @@ fi
 # get ftp list
 FTP_LIST=$(curl -s $FTP_URL | $GREP -oP '(?<=href=")[^"]+(?=")' | $GREP -oP '(?<=ftp://)[^"]+')
 
+
+# if DEBUG is set, set COMMAND to ls and run instead of parallel
+if [[ -n "$DEBUG" ]]; then
+    export COMMAND="ls"
+    for FTP in $FTP_LIST; do
+        echo "Debugging $FTP"
+        echo ./mirror.sh $FTP
+    done
+    exit
+fi
 # in parallel (8 at a time), run the mirror command
-parallel -j 8 --eta --progress --results _local_mirror_results --joblog _local_mirror_log.txt --resume-failed ./mirror.sh ::: $FTP_LIST
+parallel -j $PARALLEL_JOBS --eta --progress --results _local_mirror_results --joblog _local_mirror_log.txt --resume-failed ./mirror.sh ::: $FTP_LIST
 
 # to try, let's run one at a time
 for FTP in $FTP_LIST; do
